@@ -113,56 +113,11 @@
   </div>
 </main>
 <footer>Un mot, une définition, chaque jour.</footer>
+<script src="words.js"></script>
+
 <script>
-const WORDS=[
-  {word:"ephemere",definition:"Qui n'existe que pour très peu de temps, qui ne dure qu'un seul jour ou une très courte période.",category:"Adjectif",hint:"Comme une fleur de cerisier…"},
-  {word:"zenith",definition:"Point le plus haut du ciel directement au-dessus d'un observateur ; par extension, le sommet d'une réussite.",category:"Nom commun",hint:"Le soleil l'atteint à midi."},
-  {word:"labyrinthique",definition:"Qui ressemble à un labyrinthe, compliqué et difficile à traverser ou à comprendre.",category:"Adjectif",hint:"Minotaure serait d'accord."},
-  {word:"veloute",definition:"Qui a la douceur et la consistance soyeuse du velours, ou préparation culinaire lisse et onctueuse.",category:"Adjectif / Nom",hint:"Le toucher d'une pêche."},
-  {word:"crepuscule",definition:"Lumière diffuse qui précède le coucher du soleil ou suit son lever ; période de déclin ou de fin.",category:"Nom commun",hint:"Entre le jour et la nuit."},
-  {word:"palimpseste",definition:"Parchemin dont on a effacé l'écriture pour écrire de nouveau, mais dont l'ancien texte reste visible.",category:"Nom commun",hint:"Les moines médiévaux le pratiquaient par économie."},
-  {word:"sinueux",definition:"Qui présente de nombreuses courbes et méandres ; peu direct ou honnête au sens figuré.",category:"Adjectif",hint:"La forme d'une rivière de montagne."},
-  {word:"resonance",definition:"Phénomène par lequel un son est amplifié et prolongé ; effet durable produit par une œuvre ou une idée.",category:"Nom commun",hint:"La corde d'une guitare en bénéficie."},
-  {word:"nostalgie",definition:"Mélancolie douce-amère causée par le souvenir d'une époque révolue ou d'un lieu que l'on a quitté.",category:"Nom commun",hint:"Le parfum d'une madeleine de Proust."},
-  {word:"limpide",definition:"Parfaitement transparent et pur ; se dit aussi d'un style ou d'une explication très claire.",category:"Adjectif",hint:"L'eau d'une source de montagne."},
-  {word:"tacite",definition:"Qui n'est pas exprimé mais sous-entendu, accepté ou convenu sans être formulé explicitement.",category:"Adjectif",hint:"Un accord sans paroles."},
-  {word:"nebuleux",definition:"Qui est flou, obscur, difficile à percevoir ou à comprendre ; couvert de nuages ou de brume.",category:"Adjectif",hint:"L'opposé de limpide."},
-  {word:"intemperie",definition:"Rigueur du temps, mauvais temps accompagné de pluie, vent ou froid.",category:"Nom commun",hint:"Le parapluie en est la défense."},
-  {word:"allegorie",definition:"Représentation abstraite d'une idée au moyen d'une image concrète ou d'un récit symbolique.",category:"Nom commun",hint:"La justice portant une balance en est une."},
-  {word:"jubilation",definition:"Joie vive, intense et expansive, souvent manifestée avec exubérance.",category:"Nom commun",hint:"L'émotion après une grande victoire."},
-  {word:"lacunaire",definition:"Qui présente des lacunes, des manques, des parties absentes ou insuffisantes.",category:"Adjectif",hint:"Un dossier incomplet."},
-  {word:"verbiage",definition:"Abondance de paroles inutiles ou vides de sens ; discours prolixe sans substance réelle.",category:"Nom commun",hint:"Beaucoup de mots pour ne rien dire."},
-  {word:"subliminal",definition:"Qui se situe en dessous du seuil de la conscience, perçu sans en avoir une pleine connaissance.",category:"Adjectif",hint:"Le cerveau perçoit ce que les yeux ne voient pas."},
-  {word:"iridescent",definition:"Qui présente des reflets chatoyants aux couleurs changeantes comme ceux de l'arc-en-ciel.",category:"Adjectif",hint:"L'aile d'un colibri."},
-  {word:"placide",definition:"D'un calme serein et tranquille, qui n'est pas facilement troublé ou agité.",category:"Adjectif",hint:"Comme un lac sans vent."},
-  {word:"tumulte",definition:"Agitation bruyante et désordonnée d'une foule ; grand désordre accompagné de bruit.",category:"Nom commun",hint:"La place du marché un samedi matin."},
-  {word:"diaphane",definition:"Si mince ou si délicat qu'on peut voir à travers ; d'une transparence légère et délicate.",category:"Adjectif",hint:"La peau d'une libellule."},
-  {word:"sillage",definition:"Trace laissée par un bateau sur l'eau ; par extension, trace ou influence laissée par quelqu'un.",category:"Nom commun",hint:"Ce que l'on suit derrière un navire."},
-  {word:"onirique",definition:"Qui se rapporte aux rêves, qui a le caractère irréel, flottant et symbolique d'un rêve.",category:"Adjectif",hint:"Salvador Dalí en a fait sa spécialité."},
-  {word:"furtif",definition:"Qui se fait à la dérobée, rapidement et discrètement, sans se laisser voir ou entendre.",category:"Adjectif",hint:"Le regard lancé en coin."},
-  {word:"apocryphe",definition:"Dont l'authenticité est douteuse ou non reconnue ; se dit d'un texte d'authenticité contestée.",category:"Adjectif",hint:"Des évangiles non retenus par l'Église."},
-  {word:"interstice",definition:"Petit espace vide entre des parties d'un ensemble ; fissure ou fente étroite.",category:"Nom commun",hint:"La lumière passe à travers les volets."},
-  {word:"torpeur",definition:"État d'engourdissement physique et mental, d'activité ralentie et de somnolence profonde.",category:"Nom commun",hint:"L'après-repas d'un dimanche ensoleillé."},
-  {word:"fulgurant",definition:"Qui a la rapidité et l'éclat de la foudre ; qui se produit de façon soudaine et brillante.",category:"Adjectif",hint:"Une carrière en plein essor."},
-  {word:"soliloque",definition:"Discours que l'on se tient à soi-même ; monologue d'un personnage seul sur scène.",category:"Nom commun",hint:"Être ou ne pas être, c'en est un célèbre."},
-  {word:"axiome",definition:"Vérité posée comme évidente, admise sans démonstration comme point de départ d'un raisonnement.",category:"Nom commun",hint:"En géométrie, la base de tout."},
-  {word:"cadence",definition:"Rythme régulier d'une suite de sons, de mouvements ou d'événements ; tempo caractéristique.",category:"Nom commun",hint:"Le métronome en mesure la valeur."},
-  {word:"insolite",definition:"Qui sort de l'ordinaire, qui étonne par son caractère inhabituel ou bizarre.",category:"Adjectif",hint:"La rencontre du troisième type."},
-  {word:"panoramique",definition:"Qui embrasse un vaste horizon, offrant une vue étendue dans toutes les directions.",category:"Adjectif",hint:"La vue du haut d'une montagne."},
-  {word:"meandre",definition:"Courbe sinueuse d'un cours d'eau ; au sens figuré, détour ou repli d'un sujet.",category:"Nom commun",hint:"La Loire en est riche."},
-  {word:"ineffable",definition:"Qui ne peut être exprimé par des paroles tant c'est grand, sublime ou intense.",category:"Adjectif",hint:"Certains couchers de soleil le sont."},
-  {word:"perspicace",definition:"Qui fait preuve d'une grande pénétration d'esprit, capable de discerner ce qui est caché ou subtil.",category:"Adjectif",hint:"L'œil d'un enquêteur hors pair."},
-  {word:"quintessence",definition:"Ce qu'il y a de plus pur, de plus raffiné dans quelque chose ; la partie la plus essentielle.",category:"Nom commun",hint:"La crème de la crème."},
-  {word:"stoique",definition:"Qui supporte la douleur, les épreuves ou les malheurs avec impassibilité et courage.",category:"Adjectif",hint:"Accepter ce que l'on ne peut changer."},
-  {word:"idylle",definition:"Poème pastoral évoquant des scènes champêtres ; par extension, aventure amoureuse tendre et douce.",category:"Nom commun",hint:"Un amour de vacances innocent."},
-  {word:"kafkaien",definition:"Qui rappelle l'univers de Kafka, absurde et oppressant, dominé par une bureaucratie incompréhensible.",category:"Adjectif",hint:"Un dossier administratif sans fin."},
-  {word:"belvedere",definition:"Terrasse ou pavillon situé en hauteur offrant une belle vue sur le paysage environnant.",category:"Nom commun",hint:"On y admire le panorama."},
-  {word:"chimere",definition:"Projet ou idée irréalisable, illusion vaine ; dans la mythologie, monstre crachant du feu.",category:"Nom commun",hint:"Pourchasser l'impossible."},
-  {word:"melliflue",definition:"D'une douceur suave et coulante comme du miel ; se dit d'une voix ou d'un style d'une grande douceur.",category:"Adjectif",hint:"Mêl, comme miel en latin."},
-  {word:"falot",definition:"Terne, sans éclat ni personnalité ; qui manque de caractère ou passe inaperçu.",category:"Adjectif",hint:"L'opposé de charismatique."},
-  {word:"vernaculaire",definition:"Propre à un pays ou une région, parlé seulement dans un contexte local et non officiel.",category:"Adjectif",hint:"Le patois de votre grand-mère."},
-  {word:"zele",definition:"Ardeur et énergie déployées au service d'une cause ou dans l'accomplissement d'une tâche.",category:"Nom commun",hint:"Le moteur du bon élève de la classe."}
-];
+// Mots chargés depuis words.js
+
 
 const MAX=6, KEY='ddj_v2';
 
