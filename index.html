@@ -134,7 +134,7 @@ function confetti(){
   for(let i=0;i<70;i++){const p=document.createElement('div');p.className='confetti-piece';p.style.cssText=`left:${Math.random()*100}%;top:-10px;width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;background:${c[Math.floor(Math.random()*c.length)]};border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*.8}s;`;a.appendChild(p);setTimeout(()=>p.remove(),4000)}
 }
 
-function shareText(streak,word){return `🎯 Définition du Jour\n${'🔥'.repeat(Math.min(streak,10))} Série de ${streak} jour${streak>1?'s':''} !\nJ'ai trouvé la définition du jour.\nJoue aussi → http://defdujour.fr`}
+function shareText(streak,word){return `🎯 Définition du Jour\n${'🔥'.repeat(Math.min(streak,10))} Série de ${streak} jour${streak>1?'s':''} !\nJ'ai trouvé la définition du jour.\nJoue aussi → http://defdujour.fr #DEFDUJOUR`}
 function tw(s,w){window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText(s,w))}`,'_blank','width=600,height=400')}
 function fb(s,w){window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('http://defdujour.fr/')}&quote=${encodeURIComponent(shareText(s,w))}`,'_blank','width=600,height=400')}
 
