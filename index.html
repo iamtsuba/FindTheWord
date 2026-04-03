@@ -4,117 +4,266 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Définition du Jour</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--ink:#1a1412;--paper:#f5f0e8;--warm:#e8dfd0;--accent:#c0392b;--accent2:#e67e22;--muted:#8a7d72;--card:#fffdf8;--shadow:0 4px 32px rgba(26,20,18,.10);--r:16px}
+    html{font-size:16px}
+    body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;align-items:center}
+    header{width:100%;max-width:640px;padding:28px 20px 0;display:flex;justify-content:space-between;align-items:center}
+    .logo{font-family:'Playfair Display',Georgia,serif;font-size:1.4rem;font-weight:700;color:var(--ink);line-height:1}
+    .logo span{display:block;font-style:italic;font-weight:400;color:var(--accent);font-size:.95rem}
+    .streak-badge{display:flex;align-items:center;gap:6px;background:var(--ink);color:#fff;padding:7px 13px;border-radius:100px;font-family:'DM Mono',monospace;font-size:.9rem}
+    main{width:100%;max-width:640px;padding:20px 20px 48px;flex:1;display:flex;flex-direction:column;gap:18px}
+    .today-date{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+    .definition-card{background:var(--card);border:1px solid var(--warm);border-radius:var(--r);padding:26px 26px 26px 30px;box-shadow:var(--shadow);position:relative}
+    .definition-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(to bottom,var(--accent),var(--accent2));border-radius:4px 0 0 4px}
+    .card-label{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+    .definition-text{font-family:'Playfair Display',Georgia,serif;font-size:1.2rem;line-height:1.65;font-style:italic;color:var(--ink)}
+    .category-tag{margin-top:14px;display:inline-block;font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;background:var(--warm);color:var(--muted);padding:3px 10px;border-radius:100px}
+    .game-section{display:flex;flex-direction:column;gap:10px}
+    .input-wrapper{display:flex;gap:8px}
+    .guess-input{flex:1;background:var(--card);border:2px solid var(--warm);border-radius:12px;padding:13px 16px;font-family:'DM Sans',sans-serif;font-size:1rem;color:var(--ink);outline:none;transition:border-color .2s}
+    .guess-input:focus{border-color:var(--ink)}
+    @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+    .shake{animation:shake .4s ease}
+    .submit-btn{background:var(--ink);color:#fff;border:none;border-radius:12px;width:50px;font-size:1.2rem;cursor:pointer;transition:background .2s}
+    .submit-btn:hover{background:var(--accent)}
+    .hint-text{font-size:.83rem;color:var(--muted);min-height:1.3em}
+    .hint-text.wrong{color:var(--accent)}.hint-text.close{color:var(--accent2)}
+    .attempts-display{display:flex;gap:6px}
+    .attempt-dot{width:10px;height:10px;border-radius:50%;background:var(--warm)}
+    .attempt-dot.used{background:var(--muted)}
+    .result-card{background:var(--card);border:1px solid var(--warm);border-radius:var(--r);padding:32px 24px;box-shadow:var(--shadow);text-align:center;position:relative;overflow:hidden}
+    .confetti-area{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+    @keyframes confetti-fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(520px) rotate(720deg);opacity:0}}
+    .confetti-piece{position:absolute;border-radius:2px;animation:confetti-fall linear forwards}
+    .result-emoji{font-size:2.6rem;margin-bottom:10px;line-height:1}
+    .result-title{font-family:'Playfair Display',Georgia,serif;font-size:1.7rem;font-weight:700;margin-bottom:7px}
+    .result-word{font-family:'DM Mono',monospace;font-size:.95rem;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;font-weight:500}
+    .result-message{font-size:.88rem;color:var(--muted);margin-bottom:18px;line-height:1.5}
+    .streak-display{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:#fff;padding:9px 20px;border-radius:100px;margin-bottom:20px}
+    .flame-big{font-size:1.3rem}.streak-number{font-family:'Playfair Display',Georgia,serif;font-size:1.7rem;font-weight:700;line-height:1}.streak-label{font-size:.8rem;opacity:.75}
+    .share-section{margin-bottom:20px}
+    .share-label{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+    .share-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+    .share-btn{display:flex;align-items:center;gap:7px;padding:9px 18px;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer;transition:opacity .2s}
+    .share-btn svg{width:14px;height:14px}.share-btn:hover{opacity:.82}
+    .share-btn.twitter{background:#000;color:#fff}.share-btn.facebook{background:#1877F2;color:#fff}
+    .next-game p{font-size:.82rem;color:var(--muted);margin-bottom:5px}
+    .countdown{font-family:'DM Mono',monospace;font-size:1.3rem;font-weight:500;color:var(--ink);letter-spacing:.1em}
+    footer{width:100%;text-align:center;padding:14px;font-size:.72rem;color:var(--muted);border-top:1px solid var(--warm);font-family:'DM Mono',monospace;letter-spacing:.06em}
+    .hidden{display:none!important}
+    @media(max-width:480px){.definition-text{font-size:1.05rem}.result-title{font-size:1.4rem}.share-btn{width:100%;justify-content:center}}
+  </style>
 </head>
 <body>
-  <div class="noise"></div>
-
-  <header>
-    <div class="logo">Définition<span>du Jour</span></div>
-    <div class="streak-badge" id="streakBadge">
-      <span class="flame">🔥</span>
-      <span id="streakCount">0</span>
+<header>
+  <div class="logo">Définition<span>du Jour</span></div>
+  <div class="streak-badge"><span>🔥</span><span id="streakCount">0</span></div>
+</header>
+<main>
+  <p id="todayDate" class="today-date"></p>
+  <div class="definition-card" id="definitionCard">
+    <p class="card-label">Définition du jour</p>
+    <p class="definition-text" id="definitionText"></p>
+    <span class="category-tag" id="categoryTag"></span>
+  </div>
+  <div class="game-section hidden" id="gameSection">
+    <div class="input-wrapper">
+      <input type="text" id="guessInput" class="guess-input" placeholder="Votre réponse…" autocomplete="off" autocorrect="off" spellcheck="false"/>
+      <button class="submit-btn" id="submitBtn">→</button>
     </div>
-  </header>
-
-  <main>
-    <section class="date-section">
-      <p id="todayDate" class="today-date"></p>
-    </section>
-
-    <section class="definition-card" id="definitionCard">
-      <p class="card-label">Définition du jour</p>
-      <blockquote id="definitionText" class="definition-text"></blockquote>
-      <p class="category-tag" id="categoryTag"></p>
-    </section>
-
-    <section class="game-section" id="gameSection">
-      <div class="input-wrapper">
-        <input
-          type="text"
-          id="guessInput"
-          class="guess-input"
-          placeholder="Votre réponse…"
-          autocomplete="off"
-          autocorrect="off"
-          spellcheck="false"
-        />
-        <button class="submit-btn" id="submitBtn">→</button>
-      </div>
-      <p class="hint-text" id="hintText"></p>
-      <div class="attempts-display" id="attemptsDisplay"></div>
-    </section>
-
-    <section class="result-section hidden" id="resultSection">
-      <div class="result-card" id="resultCard">
-        <div class="confetti-area" id="confettiArea"></div>
-        <p class="result-emoji" id="resultEmoji">🎉</p>
-        <h2 class="result-title" id="resultTitle">Bravo !</h2>
-        <p class="result-word" id="resultWord"></p>
-        <p class="result-message" id="resultMessage"></p>
-        <div class="streak-display" id="streakDisplay">
-          <span class="flame-big">🔥</span>
-          <span class="streak-number" id="streakNumber">0</span>
-          <span class="streak-label">jour(s) de série</span>
-        </div>
-        <div class="share-section">
-          <p class="share-label">Partager votre série</p>
-          <div class="share-buttons">
-            <button class="share-btn twitter" id="shareTwitter">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.26 5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-              Twitter / X
-            </button>
-            <button class="share-btn facebook" id="shareFacebook">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-              Facebook
-            </button>
-          </div>
-        </div>
-        <div class="next-game">
-          <p>Revenez demain pour un nouveau mot !</p>
-          <div class="countdown" id="countdown"></div>
+    <p class="hint-text" id="hintText"></p>
+    <div class="attempts-display" id="attemptsDisplay"></div>
+  </div>
+  <div class="hidden" id="resultSection">
+    <div class="result-card">
+      <div class="confetti-area" id="confettiArea"></div>
+      <p class="result-emoji" id="resultEmoji">🎉</p>
+      <h2 class="result-title" id="resultTitle">Bravo !</h2>
+      <p class="result-word" id="resultWord"></p>
+      <p class="result-message" id="resultMessage"></p>
+      <div class="streak-display" id="streakDisplay"><span class="flame-big">🔥</span><span class="streak-number" id="streakNumber">0</span><span class="streak-label">jour(s) de série</span></div>
+      <div class="share-section" id="shareSection">
+        <p class="share-label">Partager votre série</p>
+        <div class="share-buttons">
+          <button class="share-btn twitter" id="shareTwitter"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.26 5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Twitter / X</button>
+          <button class="share-btn facebook" id="shareFacebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook</button>
         </div>
       </div>
-    </section>
-
-    <section class="already-played hidden" id="alreadyPlayed">
-      <div class="result-card">
-        <p class="result-emoji">✅</p>
-        <h2 class="result-title">Déjà joué aujourd'hui !</h2>
-        <p class="result-word" id="alreadyWord"></p>
-        <div class="streak-display">
-          <span class="flame-big">🔥</span>
-          <span class="streak-number" id="alreadyStreak">0</span>
-          <span class="streak-label">jour(s) de série</span>
-        </div>
-        <div class="share-section">
-          <p class="share-label">Partager votre série</p>
-          <div class="share-buttons">
-            <button class="share-btn twitter" id="shareTwitterAlready">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.26 5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-              Twitter / X
-            </button>
-            <button class="share-btn facebook" id="shareFacebookAlready">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-              Facebook
-            </button>
-          </div>
-        </div>
-        <div class="next-game">
-          <p>Revenez demain pour un nouveau mot !</p>
-          <div class="countdown" id="countdownAlready"></div>
+      <div class="next-game"><p>Revenez demain pour un nouveau mot !</p><div class="countdown" id="countdown"></div></div>
+    </div>
+  </div>
+  <div class="hidden" id="alreadyPlayed">
+    <div class="result-card">
+      <p class="result-emoji">✅</p>
+      <h2 class="result-title">Déjà joué aujourd'hui !</h2>
+      <p class="result-word" id="alreadyWord"></p>
+      <div class="streak-display"><span class="flame-big">🔥</span><span class="streak-number" id="alreadyStreak">0</span><span class="streak-label">jour(s) de série</span></div>
+      <div class="share-section">
+        <p class="share-label">Partager votre série</p>
+        <div class="share-buttons">
+          <button class="share-btn twitter" id="shareTwitterAlready"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.26 5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Twitter / X</button>
+          <button class="share-btn facebook" id="shareFacebookAlready"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook</button>
         </div>
       </div>
-    </section>
-  </main>
+      <div class="next-game"><p>Revenez demain pour un nouveau mot !</p><div class="countdown" id="countdownAlready"></div></div>
+    </div>
+  </div>
+</main>
+<footer>Un mot, une définition, chaque jour.</footer>
+<script>
+const WORDS=[
+  {word:"ephemere",definition:"Qui n'existe que pour très peu de temps, qui ne dure qu'un seul jour ou une très courte période.",category:"Adjectif",hint:"Comme une fleur de cerisier…"},
+  {word:"zenith",definition:"Point le plus haut du ciel directement au-dessus d'un observateur ; par extension, le sommet d'une réussite.",category:"Nom commun",hint:"Le soleil l'atteint à midi."},
+  {word:"labyrinthique",definition:"Qui ressemble à un labyrinthe, compliqué et difficile à traverser ou à comprendre.",category:"Adjectif",hint:"Minotaure serait d'accord."},
+  {word:"veloute",definition:"Qui a la douceur et la consistance soyeuse du velours, ou préparation culinaire lisse et onctueuse.",category:"Adjectif / Nom",hint:"Le toucher d'une pêche."},
+  {word:"crepuscule",definition:"Lumière diffuse qui précède le coucher du soleil ou suit son lever ; période de déclin ou de fin.",category:"Nom commun",hint:"Entre le jour et la nuit."},
+  {word:"palimpseste",definition:"Parchemin dont on a effacé l'écriture pour écrire de nouveau, mais dont l'ancien texte reste visible.",category:"Nom commun",hint:"Les moines médiévaux le pratiquaient par économie."},
+  {word:"sinueux",definition:"Qui présente de nombreuses courbes et méandres ; peu direct ou honnête au sens figuré.",category:"Adjectif",hint:"La forme d'une rivière de montagne."},
+  {word:"resonance",definition:"Phénomène par lequel un son est amplifié et prolongé ; effet durable produit par une œuvre ou une idée.",category:"Nom commun",hint:"La corde d'une guitare en bénéficie."},
+  {word:"nostalgie",definition:"Mélancolie douce-amère causée par le souvenir d'une époque révolue ou d'un lieu que l'on a quitté.",category:"Nom commun",hint:"Le parfum d'une madeleine de Proust."},
+  {word:"limpide",definition:"Parfaitement transparent et pur ; se dit aussi d'un style ou d'une explication très claire.",category:"Adjectif",hint:"L'eau d'une source de montagne."},
+  {word:"tacite",definition:"Qui n'est pas exprimé mais sous-entendu, accepté ou convenu sans être formulé explicitement.",category:"Adjectif",hint:"Un accord sans paroles."},
+  {word:"nebuleux",definition:"Qui est flou, obscur, difficile à percevoir ou à comprendre ; couvert de nuages ou de brume.",category:"Adjectif",hint:"L'opposé de limpide."},
+  {word:"intemperie",definition:"Rigueur du temps, mauvais temps accompagné de pluie, vent ou froid.",category:"Nom commun",hint:"Le parapluie en est la défense."},
+  {word:"allegorie",definition:"Représentation abstraite d'une idée au moyen d'une image concrète ou d'un récit symbolique.",category:"Nom commun",hint:"La justice portant une balance en est une."},
+  {word:"jubilation",definition:"Joie vive, intense et expansive, souvent manifestée avec exubérance.",category:"Nom commun",hint:"L'émotion après une grande victoire."},
+  {word:"lacunaire",definition:"Qui présente des lacunes, des manques, des parties absentes ou insuffisantes.",category:"Adjectif",hint:"Un dossier incomplet."},
+  {word:"verbiage",definition:"Abondance de paroles inutiles ou vides de sens ; discours prolixe sans substance réelle.",category:"Nom commun",hint:"Beaucoup de mots pour ne rien dire."},
+  {word:"subliminal",definition:"Qui se situe en dessous du seuil de la conscience, perçu sans en avoir une pleine connaissance.",category:"Adjectif",hint:"Le cerveau perçoit ce que les yeux ne voient pas."},
+  {word:"iridescent",definition:"Qui présente des reflets chatoyants aux couleurs changeantes comme ceux de l'arc-en-ciel.",category:"Adjectif",hint:"L'aile d'un colibri."},
+  {word:"placide",definition:"D'un calme serein et tranquille, qui n'est pas facilement troublé ou agité.",category:"Adjectif",hint:"Comme un lac sans vent."},
+  {word:"tumulte",definition:"Agitation bruyante et désordonnée d'une foule ; grand désordre accompagné de bruit.",category:"Nom commun",hint:"La place du marché un samedi matin."},
+  {word:"diaphane",definition:"Si mince ou si délicat qu'on peut voir à travers ; d'une transparence légère et délicate.",category:"Adjectif",hint:"La peau d'une libellule."},
+  {word:"sillage",definition:"Trace laissée par un bateau sur l'eau ; par extension, trace ou influence laissée par quelqu'un.",category:"Nom commun",hint:"Ce que l'on suit derrière un navire."},
+  {word:"onirique",definition:"Qui se rapporte aux rêves, qui a le caractère irréel, flottant et symbolique d'un rêve.",category:"Adjectif",hint:"Salvador Dalí en a fait sa spécialité."},
+  {word:"furtif",definition:"Qui se fait à la dérobée, rapidement et discrètement, sans se laisser voir ou entendre.",category:"Adjectif",hint:"Le regard lancé en coin."},
+  {word:"apocryphe",definition:"Dont l'authenticité est douteuse ou non reconnue ; se dit d'un texte d'authenticité contestée.",category:"Adjectif",hint:"Des évangiles non retenus par l'Église."},
+  {word:"interstice",definition:"Petit espace vide entre des parties d'un ensemble ; fissure ou fente étroite.",category:"Nom commun",hint:"La lumière passe à travers les volets."},
+  {word:"torpeur",definition:"État d'engourdissement physique et mental, d'activité ralentie et de somnolence profonde.",category:"Nom commun",hint:"L'après-repas d'un dimanche ensoleillé."},
+  {word:"fulgurant",definition:"Qui a la rapidité et l'éclat de la foudre ; qui se produit de façon soudaine et brillante.",category:"Adjectif",hint:"Une carrière en plein essor."},
+  {word:"soliloque",definition:"Discours que l'on se tient à soi-même ; monologue d'un personnage seul sur scène.",category:"Nom commun",hint:"Être ou ne pas être, c'en est un célèbre."},
+  {word:"axiome",definition:"Vérité posée comme évidente, admise sans démonstration comme point de départ d'un raisonnement.",category:"Nom commun",hint:"En géométrie, la base de tout."},
+  {word:"cadence",definition:"Rythme régulier d'une suite de sons, de mouvements ou d'événements ; tempo caractéristique.",category:"Nom commun",hint:"Le métronome en mesure la valeur."},
+  {word:"insolite",definition:"Qui sort de l'ordinaire, qui étonne par son caractère inhabituel ou bizarre.",category:"Adjectif",hint:"La rencontre du troisième type."},
+  {word:"panoramique",definition:"Qui embrasse un vaste horizon, offrant une vue étendue dans toutes les directions.",category:"Adjectif",hint:"La vue du haut d'une montagne."},
+  {word:"meandre",definition:"Courbe sinueuse d'un cours d'eau ; au sens figuré, détour ou repli d'un sujet.",category:"Nom commun",hint:"La Loire en est riche."},
+  {word:"ineffable",definition:"Qui ne peut être exprimé par des paroles tant c'est grand, sublime ou intense.",category:"Adjectif",hint:"Certains couchers de soleil le sont."},
+  {word:"perspicace",definition:"Qui fait preuve d'une grande pénétration d'esprit, capable de discerner ce qui est caché ou subtil.",category:"Adjectif",hint:"L'œil d'un enquêteur hors pair."},
+  {word:"quintessence",definition:"Ce qu'il y a de plus pur, de plus raffiné dans quelque chose ; la partie la plus essentielle.",category:"Nom commun",hint:"La crème de la crème."},
+  {word:"stoique",definition:"Qui supporte la douleur, les épreuves ou les malheurs avec impassibilité et courage.",category:"Adjectif",hint:"Accepter ce que l'on ne peut changer."},
+  {word:"idylle",definition:"Poème pastoral évoquant des scènes champêtres ; par extension, aventure amoureuse tendre et douce.",category:"Nom commun",hint:"Un amour de vacances innocent."},
+  {word:"kafkaien",definition:"Qui rappelle l'univers de Kafka, absurde et oppressant, dominé par une bureaucratie incompréhensible.",category:"Adjectif",hint:"Un dossier administratif sans fin."},
+  {word:"belvedere",definition:"Terrasse ou pavillon situé en hauteur offrant une belle vue sur le paysage environnant.",category:"Nom commun",hint:"On y admire le panorama."},
+  {word:"chimere",definition:"Projet ou idée irréalisable, illusion vaine ; dans la mythologie, monstre crachant du feu.",category:"Nom commun",hint:"Pourchasser l'impossible."},
+  {word:"melliflue",definition:"D'une douceur suave et coulante comme du miel ; se dit d'une voix ou d'un style d'une grande douceur.",category:"Adjectif",hint:"Mêl, comme miel en latin."},
+  {word:"falot",definition:"Terne, sans éclat ni personnalité ; qui manque de caractère ou passe inaperçu.",category:"Adjectif",hint:"L'opposé de charismatique."},
+  {word:"vernaculaire",definition:"Propre à un pays ou une région, parlé seulement dans un contexte local et non officiel.",category:"Adjectif",hint:"Le patois de votre grand-mère."},
+  {word:"zele",definition:"Ardeur et énergie déployées au service d'une cause ou dans l'accomplissement d'une tâche.",category:"Nom commun",hint:"Le moteur du bon élève de la classe."}
+];
 
-  <footer>
-    <p>Un mot, une définition, chaque jour.</p>
-  </footer>
+const MAX=6, KEY='ddj_v2';
 
-  <script src="words.js"></script>
-  <script src="game.js"></script>
+function todayKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function yesterdayKey(){const d=new Date();d.setDate(d.getDate()-1);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function todayWord(){const s=new Date('2024-01-01'),diff=Math.floor((new Date()-s)/86400000);return WORDS[diff%WORDS.length]}
+function norm(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z]/g,'')}
+function fmtDate(k){const d=new Date(k+'T12:00:00');return d.toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase()}
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch{return{}}}
+function save(s){localStorage.setItem(KEY,JSON.stringify(s))}
+
+function confetti(){
+  const a=document.getElementById('confettiArea'),c=['#c0392b','#e67e22','#f1c40f','#27ae60','#2980b9','#8e44ad'];
+  for(let i=0;i<70;i++){const p=document.createElement('div');p.className='confetti-piece';p.style.cssText=`left:${Math.random()*100}%;top:-10px;width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;background:${c[Math.floor(Math.random()*c.length)]};border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*.8}s;`;a.appendChild(p);setTimeout(()=>p.remove(),4000)}
+}
+
+function shareText(streak,word){return `🎯 Définition du Jour\n${'🔥'.repeat(Math.min(streak,10))} Série de ${streak} jour${streak>1?'s':''} !\nJ'ai trouvé « ${word.toUpperCase()} ».\nJoue aussi → https://iamtsuba.github.io/definition-du-jour/`}
+function tw(s,w){window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText(s,w))}`,'_blank','width=600,height=400')}
+function fb(s,w){window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://iamtsuba.github.io/definition-du-jour/')}&quote=${encodeURIComponent(shareText(s,w))}`,'_blank','width=600,height=400')}
+
+function countdown(id){
+  function tick(){const n=new Date(),nx=new Date(n);nx.setDate(nx.getDate()+1);nx.setHours(0,0,0,0);const d=Math.max(0,nx-n);const el=document.getElementById(id);if(el)el.textContent=`${String(Math.floor(d/3600000)).padStart(2,'0')}:${String(Math.floor(d%3600000/60000)).padStart(2,'0')}:${String(Math.floor(d%60000/1000)).padStart(2,'0')}`}
+  tick();setInterval(tick,1000)
+}
+
+function dots(used){
+  const c=document.getElementById('attemptsDisplay');c.innerHTML='';
+  for(let i=0;i<MAX;i++){const d=document.createElement('div');d.className='attempt-dot'+(i<used?' used':'');c.appendChild(d)}
+}
+
+function init(){
+  const today=todayKey(),wo=todayWord(),state=load();
+  document.getElementById('todayDate').textContent=fmtDate(today);
+  document.getElementById('definitionText').textContent=wo.definition;
+  document.getElementById('categoryTag').textContent=wo.category;
+  document.getElementById('streakCount').textContent=state.streak||0;
+
+  if(state.lastPlayedDate===today){
+    document.getElementById('alreadyWord').textContent='Le mot du jour : '+wo.word.toUpperCase();
+    document.getElementById('alreadyStreak').textContent=state.streak||0;
+    document.getElementById('alreadyPlayed').classList.remove('hidden');
+    const s=state.streak||0,w=wo.word;
+    document.getElementById('shareTwitterAlready').onclick=()=>tw(s,w);
+    document.getElementById('shareFacebookAlready').onclick=()=>fb(s,w);
+    countdown('countdownAlready');
+    return;
+  }
+
+  const yest=yesterdayKey();
+  if(state.lastWonDate&&state.lastWonDate!==yest&&state.lastWonDate!==today){state.streak=0;save(state);document.getElementById('streakCount').textContent=0}
+
+  document.getElementById('gameSection').classList.remove('hidden');
+  let attempts=0;dots(0);
+  const input=document.getElementById('guessInput'),hint=document.getElementById('hintText');
+
+  function guess(){
+    const raw=input.value.trim();if(!raw)return;
+    if(norm(raw)===norm(wo.word)){
+      state.streak=state.lastWonDate===yest?(state.streak||0)+1:1;
+      state.lastWonDate=today;state.lastPlayedDate=today;save(state);
+      document.getElementById('gameSection').classList.add('hidden');
+      document.getElementById('resultSection').classList.remove('hidden');
+      document.getElementById('resultWord').textContent=wo.word.toUpperCase();
+      document.getElementById('resultMessage').textContent=`Trouvé en ${attempts+1} tentative${attempts>0?'s':''} !`;
+      document.getElementById('streakNumber').textContent=state.streak;
+      document.getElementById('streakCount').textContent=state.streak;
+      confetti();countdown('countdown');
+      const s=state.streak,w=wo.word;
+      document.getElementById('shareTwitter').onclick=()=>tw(s,w);
+      document.getElementById('shareFacebook').onclick=()=>fb(s,w);
+    } else {
+      attempts++;dots(attempts);
+      input.classList.add('shake');input.addEventListener('animationend',()=>input.classList.remove('shake'),{once:true});
+      if(attempts>=MAX){
+        state.streak=0;state.lastPlayedDate=today;save(state);
+        document.getElementById('gameSection').classList.add('hidden');
+        document.getElementById('resultSection').classList.remove('hidden');
+        document.getElementById('resultEmoji').textContent='😔';
+        document.getElementById('resultTitle').textContent='Perdu…';
+        document.getElementById('resultWord').textContent='Le mot était : '+wo.word.toUpperCase();
+        document.getElementById('resultMessage').textContent='Ne vous découragez pas, revenez demain !';
+        document.getElementById('streakDisplay').style.display='none';
+        document.getElementById('shareSection').style.display='none';
+        document.getElementById('streakCount').textContent=0;
+        countdown('countdown');
+      } else {
+        const left=MAX-attempts;
+        if(attempts===2){hint.className='hint-text close';hint.textContent='💡 Indice : '+wo.hint}
+        else if(attempts===4){hint.className='hint-text close';hint.textContent=`📏 Le mot contient ${wo.word.length} lettres.`}
+        else{hint.className='hint-text wrong';hint.textContent=`Ce n'est pas ça… Il reste ${left} tentative${left>1?'s':''}.`}
+      }
+      input.value='';input.focus();
+    }
+  }
+
+  document.getElementById('submitBtn').onclick=guess;
+  input.addEventListener('keydown',e=>{if(e.key==='Enter')guess()});
+  input.focus();
+}
+
+document.addEventListener('DOMContentLoaded',init);
+</script>
 </body>
 </html>
