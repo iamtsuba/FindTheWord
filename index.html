@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Définition du Jour</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="noise"></div>
+
+  <header>
+    <div class="logo">Définition<span>du Jour</span></div>
+    <div class="streak-badge" id="streakBadge">
+      <span class="flame">🔥</span>
+      <span id="streakCount">0</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="date-section">
+      <p id="todayDate" class="today-date"></p>
+    </section>
+
+    <section class="definition-card" id="definitionCard">
+      <p class="card-label">Définition du jour</p>
+      <blockquote id="definitionText" class="definition-text"></blockquote>
+      <p class="category-tag" id="categoryTag"></p>
+    </section>
+
+    <section class="game-section" id="gameSection">
+      <div class="input-wrapper">
+        <input
+          type="text"
+          id="guessInput"
+          class="guess-input"
+          placeholder="Votre réponse…"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+        />
+        <button class="submit-btn" id="submitBtn">→</button>
+      </div>
+      <p class="hint-text" id="hintText"></p>
+      <div class="attempts-display" id="attemptsDisplay"></div>
+    </section>
+
+    <section class="result-section hidden" id="resultSection">
+      <div class="result-card" id="resultCard">
+        <div class="confetti-area" id="confettiArea"></div>
+        <p class="result-emoji" id="resultEmoji">🎉</p>
+        <h2 class="result-title" id="resultTitle">Bravo !</h2>
+        <p class="result-word" id="resultWord"></p>
+        <p class="result-message" id="resultMessage"></p>
+        <div class="streak-display" id="streakDisplay">
+          <span class="flame-big">🔥</span>
+          <span class="streak-number" id="streakNumber">0</span>
+          <span class="streak-label">jour(s) de série</span>
+        </div>
+        <div class="share-section">
+          <p class="share-label">Partager votre série</p>
+          <div class="share-buttons">
+            <button class="share-btn twitter" id="shareTwitter">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.26 5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              Twitter / X
+            </button>
+            <button class="share-btn facebook" id="shareFacebook">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              Facebook
+            </button>
+          </div>
+        </div>
+        <div class="next-game">
+          <p>Revenez demain pour un nouveau mot !</p>
+          <div class="countdown" id="countdown"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="already-played hidden" id="alreadyPlayed">
+      <div class="result-card">
+        <p class="result-emoji">✅</p>
+        <h2 class="result-title">Déjà joué aujourd'hui !</h2>
+        <p class="result-word" id="alreadyWord"></p>
+        <div class="streak-display">
+          <span class="flame-big">🔥</span>
+          <span class="streak-number" id="alreadyStreak">0</span>
+          <span class="streak-label">jour(s) de série</span>
+        </div>
+        <div class="share-section">
+          <p class="share-label">Partager votre série</p>
+          <div class="share-buttons">
+            <button class="share-btn twitter" id="shareTwitterAlready">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.26 5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              Twitter / X
+            </button>
+            <button class="share-btn facebook" id="shareFacebookAlready">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              Facebook
+            </button>
+          </div>
+        </div>
+        <div class="next-game">
+          <p>Revenez demain pour un nouveau mot !</p>
+          <div class="countdown" id="countdownAlready"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Un mot, une définition, chaque jour.</p>
+  </footer>
+
+  <script src="words.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
