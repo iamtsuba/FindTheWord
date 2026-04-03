@@ -136,7 +136,7 @@ function confetti(){
 
 function shareText(streak,word){return `🎯 Définition du Jour\n${'🔥'.repeat(Math.min(streak,10))} Série de ${streak} jour${streak>1?'s':''} !\nJ'ai trouvé la définition du jour.\nJoue aussi → http://defdujour.fr`}
 function tw(s,w){window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText(s,w))}`,'_blank','width=600,height=400')}
-function fb(s,w){window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://iamtsuba.github.io/definition-du-jour/')}&quote=${encodeURIComponent(shareText(s,w))}`,'_blank','width=600,height=400')}
+function fb(s,w){window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('http://defdujour.fr/')}&quote=${encodeURIComponent(shareText(s,w))}`,'_blank','width=600,height=400')}
 
 function countdown(id){
   function tick(){const n=new Date(),nx=new Date(n);nx.setDate(nx.getDate()+1);nx.setHours(0,0,0,0);const d=Math.max(0,nx-n);const el=document.getElementById(id);if(el)el.textContent=`${String(Math.floor(d/3600000)).padStart(2,'0')}:${String(Math.floor(d%3600000/60000)).padStart(2,'0')}:${String(Math.floor(d%60000/1000)).padStart(2,'0')}`}
