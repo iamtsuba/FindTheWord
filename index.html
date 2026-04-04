@@ -59,9 +59,129 @@
     footer{width:100%;text-align:center;padding:14px;font-size:.72rem;color:var(--muted);border-top:1px solid var(--warm);font-family:'DM Mono',monospace;letter-spacing:.06em}
     .hidden{display:none!important}
     @media(max-width:480px){.definition-text{font-size:1.05rem}.result-title{font-size:1.4rem}.share-btn{width:100%;justify-content:center}}
-  </style>
+  
+    /* ── Bannière consentement cookies ──────────────────────────────────── */
+    #cookieOverlay{position:fixed;inset:0;background:rgba(26,20,18,.7);z-index:10000;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px)}
+    #cookieBanner{width:100%;max-width:680px;background:var(--card);border-top:3px solid var(--accent);border-radius:var(--r) var(--r) 0 0;padding:28px 24px 32px;box-shadow:0 -8px 40px rgba(26,20,18,.15);animation:slide-up .4s cubic-bezier(.22,1,.36,1)}
+    @keyframes slide-up{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+    .cookie-title{font-family:'Playfair Display',Georgia,serif;font-size:1.2rem;font-weight:700;color:var(--ink);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+    .cookie-title span{font-size:1.4rem}
+    .cookie-text{font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:18px}
+    .cookie-text a{color:var(--accent);text-decoration:underline;cursor:pointer}
+    .cookie-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .cookie-btn{padding:10px 20px;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:500;cursor:pointer;transition:opacity .2s}
+    .cookie-btn:hover{opacity:.85}
+    .cookie-btn.accept{background:var(--ink);color:#fff;flex:1}
+    .cookie-btn.decline{background:var(--warm);color:var(--muted);flex:1}
+    .cookie-btn.details{background:transparent;color:var(--muted);font-size:.8rem;border:1px solid var(--warm);padding:10px 14px}
+    /* ── Modal détails cookies ──────────────────────────────────────────── */
+    #cookieModal{position:fixed;inset:0;background:rgba(26,20,18,.75);z-index:10001;display:none;align-items:center;justify-content:center;padding:20px}
+    #cookieModal.open{display:flex}
+    .cookie-modal-box{background:var(--card);border-radius:var(--r);padding:28px;max-width:540px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 8px 48px rgba(26,20,18,.2);position:relative}
+    .cookie-modal-box h2{font-family:'Playfair Display',Georgia,serif;font-size:1.3rem;margin-bottom:16px;color:var(--ink)}
+    .cookie-modal-box h3{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:18px 0 6px}
+    .cookie-modal-box p{font-size:.82rem;color:var(--muted);line-height:1.65;margin-bottom:8px}
+    .cookie-modal-box table{width:100%;border-collapse:collapse;font-size:.78rem;margin-top:8px}
+    .cookie-modal-box th{text-align:left;font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--warm)}
+    .cookie-modal-box td{padding:6px 8px;color:var(--ink);border-bottom:1px solid var(--warm);vertical-align:top}
+    .cookie-modal-box td:first-child{font-weight:500}
+    .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--muted);line-height:1}
+    .modal-close:hover{color:var(--ink)}
+    /* ── Bandeau discret post-consentement ──────────────────────────────── */
+    #cookieFooterNote{position:fixed;bottom:0;left:0;right:0;background:var(--ink);color:rgba(255,255,255,.6);font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.06em;text-align:center;padding:6px 16px;z-index:9000;display:none}
+    #cookieFooterNote a{color:rgba(255,255,255,.8);text-decoration:underline;cursor:pointer}
+    /* ── Blur du contenu avant consentement ─────────────────────────────── */
+    body.pending-consent main, body.pending-consent header, body.pending-consent footer{filter:blur(4px) brightness(.95);pointer-events:none;user-select:none}
+</style>
 </head>
 <body>
+
+<!-- ══ Bannière consentement cookies (RGPD) ══════════════════════════════ -->
+<div id="cookieOverlay">
+  <div id="cookieBanner" role="dialog" aria-labelledby="cookieBannerTitle" aria-modal="true">
+    <p class="cookie-title"><span>🍪</span> <span id="cookieBannerTitle">Ce site utilise des cookies</span></p>
+    <p class="cookie-text">
+      Définition du Jour utilise des cookies <strong>strictement nécessaires</strong> pour mémoriser
+      votre progression, votre série de victoires et vos tentatives du jour.
+      Aucun cookie publicitaire ni traçage tiers n'est utilisé.
+      En jouant, vous acceptez le dépôt de ces cookies sur votre appareil pour une durée de
+      <strong>400 jours</strong>.<br><br>
+      Conformément au <strong>RGPD</strong> et à la directive ePrivacy, votre consentement est requis
+      avant tout dépôt de cookie. Vous pouvez refuser : le jeu fonctionnera mais votre progression
+      ne sera pas sauvegardée entre les sessions.<br><br>
+      <a id="openCookieModal" tabindex="0">Voir le détail des cookies →</a>
+    </p>
+    <div class="cookie-actions">
+      <button class="cookie-btn accept" id="cookieAccept">✓ Accepter les cookies</button>
+      <button class="cookie-btn decline" id="cookieDecline">✗ Refuser</button>
+      <button class="cookie-btn details" id="cookieDetails">Politique cookies</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Modal politique complète ══════════════════════════════════════════ -->
+<div id="cookieModal" role="dialog" aria-labelledby="cookieModalTitle" aria-modal="true">
+  <div class="cookie-modal-box">
+    <button class="modal-close" id="closeModal" aria-label="Fermer">×</button>
+    <h2 id="cookieModalTitle">Politique de cookies — Définition du Jour</h2>
+    <p>Ce site dépose des cookies sur votre navigateur afin de sauvegarder votre progression
+    dans le jeu. Aucune donnée personnelle identifiable n'est collectée. Aucun cookie n'est
+    partagé avec des tiers.</p>
+
+    <h3>Qu'est-ce qu'un cookie ?</h3>
+    <p>Un cookie est un petit fichier texte déposé sur votre appareil par le site web que vous
+    consultez. Il permet au site de mémoriser des informations entre deux visites.</p>
+
+    <h3>Cookies déposés par ce site</h3>
+    <table>
+      <thead>
+        <tr><th>Nom</th><th>Finalité</th><th>Durée</th><th>Type</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>ddj_consent</td>
+          <td>Mémorise votre choix d'acceptation ou de refus des cookies</td>
+          <td>400 jours</td>
+          <td>Fonctionnel</td>
+        </tr>
+        <tr>
+          <td>ddj_state</td>
+          <td>Sauvegarde votre série de victoires et les dates de jeu</td>
+          <td>400 jours</td>
+          <td>Fonctionnel</td>
+        </tr>
+        <tr>
+          <td>ddj_today</td>
+          <td>Conserve vos tentatives du jour en cours pour restaurer la partie après un rechargement</td>
+          <td>400 jours</td>
+          <td>Fonctionnel</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Base légale</h3>
+    <p>Ces cookies sont déposés sur la base de votre <strong>consentement</strong> (art. 6.1.a RGPD).
+    Vous pouvez retirer votre consentement à tout moment en cliquant sur le lien
+    « Gestion des cookies » en bas de page.</p>
+
+    <h3>Vos droits</h3>
+    <p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression
+    de vos données. Pour exercer ces droits ou pour toute question, contactez-nous via
+    <strong>defdujour.fr</strong>. En cas de refus des cookies, aucune donnée ne sera conservée
+    entre vos sessions.</p>
+
+    <h3>Comment retirer votre consentement</h3>
+    <p>Cliquez sur le lien « Gestion des cookies » en bas de chaque page, ou supprimez manuellement
+    les cookies via les paramètres de votre navigateur.</p>
+  </div>
+</div>
+
+<!-- ── Bandeau discret post-acceptation ─────────────────────────────────── -->
+<div id="cookieFooterNote">
+  🍪 Cookies acceptés —
+  <a id="revokeConsent" tabindex="0">Retirer mon consentement</a>
+</div>
+
 <header>
   <div class="logo">Définition<span>du Jour</span></div>
   <div class="streak-badge"><span>🔥</span><span id="streakCount">0</span></div>
@@ -119,7 +239,6 @@
 </main>
 <footer>Un mot, une définition, chaque jour — defdujour.fr</footer>
 <script>
-// ── 730 mots ──────────────────────────────────────────────────────────────
 const WORDS = [
 
   {word:"ephemere",definition:"Qui n'existe que pour très peu de temps, qui ne dure qu'un seul jour.",category:"Adjectif",hint:"Comme une fleur de cerisier…"},
@@ -859,10 +978,49 @@ const WORDS = [
 
 ];
 
-// ── Constantes ────────────────────────────────────────────────────────────
-const MAX = 6;
-const KEY = 'ddj_v3';
+// ── Cookies : durée 400 jours ─────────────────────────────────────────────
+function setCookie(name, value, days) {
+  const d = new Date();
+  d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+  document.cookie = name + '=' + encodeURIComponent(JSON.stringify(value))
+    + ';expires=' + d.toUTCString()
+    + ';path=/;SameSite=Lax';
+}
+function getCookie(name) {
+  const prefix = name + '=';
+  const cookies = document.cookie.split(';');
+  for (let c of cookies) {
+    c = c.trim();
+    if (c.startsWith(prefix)) {
+      try { return JSON.parse(decodeURIComponent(c.substring(prefix.length))); }
+      catch { return null; }
+    }
+  }
+  return null;
+}
+function deleteCookie(name) {
+  document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
+}
+
+// ── Clés cookies ─────────────────────────────────────────────────────────
+const C_STATE  = 'ddj_state';   // { streak, lastWonDate, lastPlayedDate }
+const C_TODAY  = 'ddj_today';   // { key, guesses[] }
+const COOKIE_DAYS = 400;
 const SITE_URL = 'http://defdujour.fr/';
+const MAX = 6;
+
+function loadState() {
+  return getCookie(C_STATE) || { streak: 0, lastWonDate: null, lastPlayedDate: null };
+}
+function saveState(s) {
+  setCookie(C_STATE, s, COOKIE_DAYS);
+}
+function loadToday() {
+  return getCookie(C_TODAY) || { key: null, guesses: [] };
+}
+function saveToday(t) {
+  setCookie(C_TODAY, t, COOKIE_DAYS);
+}
 
 // ── Utilitaires ───────────────────────────────────────────────────────────
 function todayKey() {
@@ -875,7 +1033,7 @@ function yesterdayKey() {
 }
 function todayWord() {
   const diff = Math.floor((new Date() - new Date('2024-01-01')) / 86400000);
-  return WORDS[diff % WORDS.length];
+  return WORDS[Math.abs(diff) % WORDS.length];
 }
 function norm(s) {
   return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z]/g,'');
@@ -883,8 +1041,6 @@ function norm(s) {
 function fmtDate(k) {
   return new Date(k+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase();
 }
-function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } }
-function save(s) { localStorage.setItem(KEY, JSON.stringify(s)); }
 
 // ── Confettis ─────────────────────────────────────────────────────────────
 function confetti() {
@@ -901,7 +1057,8 @@ function confetti() {
 
 // ── Partage ───────────────────────────────────────────────────────────────
 function shareText(streak, word) {
-  return '\uD83C\uDFAF Définition du Jour\n'+'\uD83D\uDD25'.repeat(Math.min(streak,10))+' Série de '+streak+' jour'+(streak>1?'s':'')+' !\nJ\'ai trouvé « '+word.toUpperCase()+' »\n'+SITE_URL;
+  const flames = Array(Math.min(streak,10)+1).join('\uD83D\uDD25');
+  return '\uD83C\uDFAF Définition du Jour\n'+flames+' Série de '+streak+' jour'+(streak>1?'s':'')+' !\nJ\'ai trouvé « '+word.toUpperCase()+' »\n'+SITE_URL;
 }
 function tw(s, w)  { window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(shareText(s,w)),'_blank','width=600,height=400'); }
 function fb(s, w)  { window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(SITE_URL)+'&quote='+encodeURIComponent(shareText(s,w)),'_blank','width=600,height=400'); }
@@ -917,22 +1074,18 @@ function countdown(id) {
   tick(); setInterval(tick, 1000);
 }
 
-// ── Affichage des tentatives ──────────────────────────────────────────────
-function renderDots(used, failed) {
+// ── Points de tentatives ──────────────────────────────────────────────────
+function renderDots(used) {
   const c = document.getElementById('attemptsDisplay');
   c.innerHTML = '';
   for (let i = 0; i < MAX; i++) {
     const d = document.createElement('div');
-    if (i < used) {
-      d.className = failed ? 'attempt-dot fail' : 'attempt-dot used';
-    } else {
-      d.className = 'attempt-dot';
-    }
+    d.className = 'attempt-dot' + (i < used ? ' used' : '');
     c.appendChild(d);
   }
 }
 
-// ── Affichage des anciennes tentatives ────────────────────────────────────
+// ── Historique des mauvaises réponses ─────────────────────────────────────
 function renderPastGuesses(guesses) {
   const c = document.getElementById('pastGuesses');
   c.innerHTML = '';
@@ -945,28 +1098,242 @@ function renderPastGuesses(guesses) {
 }
 
 // ── Indice selon le nombre d'erreurs ─────────────────────────────────────
-function getHint(attempts, wo) {
-  if (attempts === 2) return { cls:'close', text:'\uD83D\uDCA1 Indice : '+wo.hint };
-  if (attempts === 4) return { cls:'close', text:'\uD83D\uDCCF Le mot contient '+wo.word.length+' lettres.' };
-  const left = MAX - attempts;
-  return { cls:'wrong', text:'Ce n\'est pas ça… Il reste '+left+' tentative'+(left>1?'s':'')+'.' };
+function applyHint(attempts, wo) {
+  const hintEl = document.getElementById('hintText');
+  if (attempts === 0) { hintEl.textContent = ''; hintEl.className = 'hint-text'; return; }
+  if (attempts >= 2 && attempts < 4) {
+    hintEl.className = 'hint-text close';
+    hintEl.textContent = '\uD83D\uDCA1 Indice : ' + wo.hint;
+  } else if (attempts >= 4) {
+    hintEl.className = 'hint-text close';
+    hintEl.textContent = '\uD83D\uDCCF Le mot contient ' + wo.word.length + ' lettres.';
+  } else {
+    const left = MAX - attempts;
+    hintEl.className = 'hint-text wrong';
+    hintEl.textContent = 'Ce n\'est pas ça… Il reste ' + left + ' tentative' + (left>1?'s':'') + '.';
+  }
 }
+
+// ── Afficher la victoire ──────────────────────────────────────────────────
+function showVictory(state, wo, attempts) {
+  document.getElementById('gameSection').classList.add('hidden');
+  document.getElementById('resultSection').classList.remove('hidden');
+  document.getElementById('resultEmoji').textContent   = '🎉';
+  document.getElementById('resultTitle').textContent   = 'Bravo !';
+  document.getElementById('resultWord').textContent    = wo.word.toUpperCase();
+  document.getElementById('resultMessage').textContent = 'Trouvé en '+(attempts)+' tentative'+(attempts>1?'s':'')+' !';
+  document.getElementById('streakNumber').textContent  = state.streak;
+  document.getElementById('streakCount').textContent   = state.streak;
+  document.getElementById('streakDisplay').style.display  = '';
+  document.getElementById('shareSection').style.display   = '';
+  confetti();
+  countdown('countdown');
+  const s = state.streak, w = wo.word;
+  document.getElementById('shareTwitter').onclick  = () => tw(s,w);
+  document.getElementById('shareFacebook').onclick = () => fb(s,w);
+}
+
+// ── Afficher la défaite ───────────────────────────────────────────────────
+function showDefeat(wo) {
+  document.getElementById('gameSection').classList.add('hidden');
+  document.getElementById('resultSection').classList.remove('hidden');
+  document.getElementById('resultEmoji').textContent   = '😔';
+  document.getElementById('resultTitle').textContent   = 'Perdu…';
+  document.getElementById('resultWord').textContent    = 'Le mot était : '+wo.word.toUpperCase();
+  document.getElementById('resultMessage').textContent = 'Ne vous découragez pas, revenez demain !';
+  document.getElementById('streakDisplay').style.display  = 'none';
+  document.getElementById('shareSection').style.display   = 'none';
+  document.getElementById('streakCount').textContent = 0;
+  countdown('countdown');
+}
+
+
+// ══ Gestion consentement cookies ════════════════════════════════════════
+
+const C_CONSENT = 'ddj_consent';  // 'accepted' | 'declined'
+
+function getConsentCookie() {
+  const prefix = C_CONSENT + '=';
+  for (let c of document.cookie.split(';')) {
+    c = c.trim();
+    if (c.startsWith(prefix)) return decodeURIComponent(c.substring(prefix.length));
+  }
+  return null;
+}
+
+function setConsentCookie(value) {
+  const d = new Date();
+  d.setTime(d.getTime() + 400 * 24 * 60 * 60 * 1000);
+  document.cookie = C_CONSENT + '=' + encodeURIComponent(value)
+    + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
+}
+
+function clearAllGameCookies() {
+  ['ddj_state','ddj_today'].forEach(name => {
+    document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
+  });
+}
+
+function showBanner() {
+  document.body.classList.add('pending-consent');
+}
+
+function hideBanner() {
+  document.getElementById('cookieOverlay').style.display = 'none';
+  document.body.classList.remove('pending-consent');
+}
+
+function showFooterNote(show) {
+  document.getElementById('cookieFooterNote').style.display = show ? 'block' : 'none';
+}
+
+// ── Accepter ─────────────────────────────────────────────────────────────
+document.getElementById('cookieAccept').addEventListener('click', function() {
+  setConsentCookie('accepted');
+  hideBanner();
+  showFooterNote(true);
+  init();  // Lancer le jeu après accord
+});
+
+// ── Refuser ───────────────────────────────────────────────────────────────
+document.getElementById('cookieDecline').addEventListener('click', function() {
+  setConsentCookie('declined');
+  clearAllGameCookies();
+  hideBanner();
+  showFooterNote(false);
+  initNoConsent();  // Mode dégradé sans sauvegarde
+});
+
+// ── Ouvrir modal détails ──────────────────────────────────────────────────
+['openCookieModal','cookieDetails'].forEach(id => {
+  document.getElementById(id).addEventListener('click', function() {
+    document.getElementById('cookieModal').classList.add('open');
+  });
+});
+document.getElementById('openCookieModal').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' || e.key === ' ') document.getElementById('cookieModal').classList.add('open');
+});
+
+// ── Fermer modal ──────────────────────────────────────────────────────────
+document.getElementById('closeModal').addEventListener('click', function() {
+  document.getElementById('cookieModal').classList.remove('open');
+});
+document.getElementById('cookieModal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
+
+// ── Retirer le consentement ───────────────────────────────────────────────
+document.getElementById('revokeConsent').addEventListener('click', function() {
+  clearAllGameCookies();
+  setConsentCookie('declined');
+  showFooterNote(false);
+  location.reload();
+});
+
+// ── Mode sans consentement : jeu fonctionnel mais sans sauvegarde ─────────
+function initNoConsent() {
+  const today = todayKey();
+  const wo    = todayWord();
+  document.getElementById('todayDate').textContent      = fmtDate(today);
+  document.getElementById('definitionText').textContent = wo.definition;
+  document.getElementById('categoryTag').textContent    = wo.category;
+  document.getElementById('streakCount').textContent    = '—';
+  document.getElementById('gameSection').classList.remove('hidden');
+  renderDots(0);
+
+  const input = document.getElementById('guessInput');
+  let attempts = 0, guesses = [];
+
+  function guess() {
+    const raw = input.value.trim();
+    if (!raw) return;
+    if (norm(raw) === norm(wo.word)) {
+      document.getElementById('gameSection').classList.add('hidden');
+      document.getElementById('resultSection').classList.remove('hidden');
+      document.getElementById('resultEmoji').textContent   = '🎉';
+      document.getElementById('resultTitle').textContent   = 'Bravo !';
+      document.getElementById('resultWord').textContent    = wo.word.toUpperCase();
+      document.getElementById('resultMessage').textContent = 'Trouvé en '+(attempts+1)+' tentative'+(attempts>0?'s':'')+' ! (série non sauvegardée — cookies refusés)';
+      document.getElementById('streakDisplay').style.display = 'none';
+      document.getElementById('shareSection').style.display  = 'none';
+      countdown('countdown');
+    } else {
+      attempts++;
+      guesses.push(raw);
+      input.classList.add('shake');
+      input.addEventListener('animationend', () => input.classList.remove('shake'), {once:true});
+      renderPastGuesses(guesses);
+      renderDots(attempts);
+      if (attempts < MAX) applyHint(attempts, wo);
+      else {
+        document.getElementById('gameSection').classList.add('hidden');
+        document.getElementById('resultSection').classList.remove('hidden');
+        document.getElementById('resultEmoji').textContent   = '😔';
+        document.getElementById('resultTitle').textContent   = 'Perdu…';
+        document.getElementById('resultWord').textContent    = 'Le mot était : '+wo.word.toUpperCase();
+        document.getElementById('resultMessage').textContent = 'Ne vous découragez pas, revenez demain !';
+        document.getElementById('streakDisplay').style.display = 'none';
+        document.getElementById('shareSection').style.display  = 'none';
+        countdown('countdown');
+      }
+      input.value = ''; input.focus();
+    }
+  }
+  document.getElementById('submitBtn').onclick = guess;
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') guess(); });
+  input.focus();
+}
+
+// ── Décision au chargement ────────────────────────────────────────────────
+(function checkConsent() {
+  const consent = getConsentCookie();
+  if (consent === 'accepted') {
+    hideBanner();
+    showFooterNote(true);
+    // init() appelé par DOMContentLoaded plus bas
+  } else if (consent === 'declined') {
+    hideBanner();
+    showFooterNote(false);
+    document.addEventListener('DOMContentLoaded', initNoConsent);
+  } else {
+    // Pas encore de choix : afficher la bannière, bloquer le jeu
+    showBanner();
+    // init() et initNoConsent() sont appelés par les boutons
+    // On supprime le listener DOMContentLoaded pour init() ci-dessous
+    window._consentPending = true;
+  }
+})();
+
 
 // ── Init principale ───────────────────────────────────────────────────────
 function init() {
-  const today = todayKey();
-  const wo    = todayWord();
-  let   state = load();
+  const today  = todayKey();
+  const yest   = yesterdayKey();
+  const wo     = todayWord();
+  let   state  = loadState();
+  let   todayData = loadToday();
 
-  // Affichage date et définition
-  document.getElementById('todayDate').textContent     = fmtDate(today);
+  // Affichage date et définition (toujours visible)
+  document.getElementById('todayDate').textContent      = fmtDate(today);
   document.getElementById('definitionText').textContent = wo.definition;
   document.getElementById('categoryTag').textContent    = wo.category;
   document.getElementById('streakCount').textContent    = state.streak || 0;
 
-  // ── Déjà joué aujourd'hui (victoire ou défaite) ───────────────────────
+  // Nouveau jour : réinitialiser les tentatives du jour
+  if (todayData.key !== today) {
+    todayData = { key: today, guesses: [] };
+    saveToday(todayData);
+  }
+
+  // Rupture de série si pas joué hier
+  if (state.lastWonDate && state.lastWonDate !== yest && state.lastWonDate !== today) {
+    state.streak = 0; saveState(state);
+    document.getElementById('streakCount').textContent = 0;
+  }
+
+  // ── Partie déjà terminée aujourd'hui ────────────────────────────────
   if (state.lastPlayedDate === today) {
-    document.getElementById('alreadyWord').textContent   = 'Le mot du jour : '+wo.word.toUpperCase();
+    document.getElementById('alreadyWord').textContent   = 'Le mot du jour : ' + wo.word.toUpperCase();
     document.getElementById('alreadyStreak').textContent = state.streak || 0;
     document.getElementById('alreadyPlayed').classList.remove('hidden');
     const s = state.streak||0, w = wo.word;
@@ -976,110 +1343,72 @@ function init() {
     return;
   }
 
-  // ── Rupture de série si le dernier mot joué n'était pas hier ─────────
-  const yest = yesterdayKey();
-  if (state.lastWonDate && state.lastWonDate !== yest && state.lastWonDate !== today) {
-    state.streak = 0; save(state);
-    document.getElementById('streakCount').textContent = 0;
-  }
+  // ── Mode jeu : restauration de l'état en cours ────────────────────
+  let guesses  = todayData.guesses || [];
+  let attempts = guesses.length;
 
-  // ── Restaurer l'état en cours de partie ──────────────────────────────
-  // On stocke les tentatives du jour dans state.todayGuesses (tableau de strings)
-  if (!state.todayKey || state.todayKey !== today) {
-    // Nouveau jour, on remet à zéro les tentatives
-    state.todayKey    = today;
-    state.todayGuesses = [];
-    save(state);
-  }
-
-  let pastGuesses = state.todayGuesses || [];
-  let attempts    = pastGuesses.length;
-
-  // Afficher les tentatives précédentes
   document.getElementById('gameSection').classList.remove('hidden');
-  renderPastGuesses(pastGuesses);
-  renderDots(attempts, false);
+  renderPastGuesses(guesses);
+  renderDots(attempts);
+  if (attempts > 0) applyHint(attempts, wo);
 
-  // Restaurer l'indice correspondant au nombre d'erreurs
+  // ── Boucle de jeu ────────────────────────────────────────────────
+  const input  = document.getElementById('guessInput');
   const hintEl = document.getElementById('hintText');
-  if (attempts > 0 && attempts < MAX) {
-    const h = getHint(attempts, wo);
-    hintEl.className = 'hint-text '+h.cls;
-    hintEl.textContent = h.text;
-  }
-
-  // ── Boucle de jeu ────────────────────────────────────────────────────
-  const input = document.getElementById('guessInput');
 
   function guess() {
     const raw = input.value.trim();
     if (!raw) return;
-    const g = norm(raw);
-    const c = norm(wo.word);
 
-    if (g === c) {
+    if (norm(raw) === norm(wo.word)) {
       // ✅ Bonne réponse
       state.streak = (state.lastWonDate === yest) ? (state.streak||0)+1 : 1;
       state.lastWonDate    = today;
       state.lastPlayedDate = today;
-      state.todayGuesses   = pastGuesses; // conserver l'historique
-      save(state);
-
-      document.getElementById('gameSection').classList.add('hidden');
-      document.getElementById('resultSection').classList.remove('hidden');
-      document.getElementById('resultWord').textContent    = wo.word.toUpperCase();
-      document.getElementById('resultMessage').textContent = 'Trouvé en '+(attempts+1)+' tentative'+(attempts>0?'s':'')+' !';
-      document.getElementById('streakNumber').textContent  = state.streak;
-      document.getElementById('streakCount').textContent   = state.streak;
-      confetti();
-      countdown('countdown');
-      const s = state.streak, w = wo.word;
-      document.getElementById('shareTwitter').onclick  = () => tw(s,w);
-      document.getElementById('shareFacebook').onclick = () => fb(s,w);
+      saveState(state);
+      // On garde les tentatives du jour dans le cookie même après victoire
+      todayData.guesses = guesses;
+      saveToday(todayData);
+      showVictory(state, wo, attempts + 1);
 
     } else {
       // ❌ Mauvaise réponse
       attempts++;
-      pastGuesses.push(raw);
-      state.todayGuesses = pastGuesses;
+      guesses.push(raw);
+      todayData.guesses = guesses;
+      saveToday(todayData);  // ← sauvegarde immédiate après chaque erreur
+
+      input.classList.add('shake');
+      input.addEventListener('animationend', () => input.classList.remove('shake'), {once:true});
 
       if (attempts >= MAX) {
         state.streak         = 0;
         state.lastPlayedDate = today;
-        save(state);
-
-        document.getElementById('gameSection').classList.add('hidden');
-        document.getElementById('resultSection').classList.remove('hidden');
-        document.getElementById('resultEmoji').textContent   = '😔';
-        document.getElementById('resultTitle').textContent   = 'Perdu…';
-        document.getElementById('resultWord').textContent    = 'Le mot était : '+wo.word.toUpperCase();
-        document.getElementById('resultMessage').textContent = 'Ne vous découragez pas, revenez demain !';
-        document.getElementById('streakDisplay').style.display  = 'none';
-        document.getElementById('shareSection').style.display   = 'none';
-        document.getElementById('streakCount').textContent = 0;
-        countdown('countdown');
+        saveState(state);
+        showDefeat(wo);
       } else {
-        save(state);
-        renderPastGuesses(pastGuesses);
-        renderDots(attempts, false);
-        input.classList.add('shake');
-        input.addEventListener('animationend', () => input.classList.remove('shake'), {once:true});
-        const h = getHint(attempts, wo);
-        hintEl.className    = 'hint-text '+h.cls;
-        hintEl.textContent  = h.text;
+        renderPastGuesses(guesses);
+        renderDots(attempts);
+        applyHint(attempts, wo);
       }
-
       input.value = '';
       input.focus();
     }
   }
 
   document.getElementById('submitBtn').onclick = guess;
-  input.addEventListener('keydown', e => { if (e.key==='Enter') guess(); });
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') guess(); });
   input.focus();
 }
 
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', function() {
+  if (!window._consentPending) {
+    const consent = getConsentCookie();
+    if (consent === 'accepted') init();
+    else if (consent === 'declined') initNoConsent();
+  }
+});
+
 </script>
 </body>
 </html>
