@@ -62,19 +62,54 @@
     @media(max-width:480px){.definition-text{font-size:1.05rem}.result-title{font-size:1.4rem}.share-btn{width:100%;justify-content:center}}
   
     /* ── Bannière consentement cookies ──────────────────────────────────── */
-    #cookieOverlay{position:fixed;inset:0;background:rgba(26,20,18,.7);z-index:10000;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px)}
-    #cookieBanner{width:100%;max-width:680px;background:var(--card);border-top:3px solid var(--accent);border-radius:var(--r) var(--r) 0 0;padding:28px 24px 32px;box-shadow:0 -8px 40px rgba(26,20,18,.15);animation:slide-up .4s cubic-bezier(.22,1,.36,1)}
-    @keyframes slide-up{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
-    .cookie-title{font-family:'Playfair Display',Georgia,serif;font-size:1.2rem;font-weight:700;color:var(--ink);margin-bottom:10px;display:flex;align-items:center;gap:8px}
-    .cookie-title span{font-size:1.4rem}
-    .cookie-text{font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:18px}
+    #cookieOverlay{
+      position:fixed;inset:0;
+      background:rgba(26,20,18,.7);
+      z-index:10000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+    }
+    #cookieBanner{
+      width:100%;
+      max-width:520px;
+      background:var(--card);
+      border-top:3px solid var(--accent);
+      border-radius:var(--r);
+      padding:24px 20px 24px;
+      box-shadow:0 8px 40px rgba(26,20,18,.2);
+      animation:cookie-pop .35s cubic-bezier(.22,1,.36,1);
+      /* Garantit que la bannière ne dépasse jamais l'écran */
+      max-height:calc(100vh - 32px);
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+    }
+    @keyframes cookie-pop{from{opacity:0;transform:scale(.96) translateY(12px)}to{opacity:1;transform:none}}
+    .cookie-title{font-family:'Playfair Display',Georgia,serif;font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+    .cookie-title span{font-size:1.2rem;flex-shrink:0}
+    .cookie-text{font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:16px}
     .cookie-text a{color:var(--accent);text-decoration:underline;cursor:pointer}
     .cookie-actions{display:flex;gap:10px;flex-wrap:wrap}
-    .cookie-btn{padding:10px 20px;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:500;cursor:pointer;transition:opacity .2s}
+    .cookie-btn{
+      padding:12px 20px;
+      border:none;
+      border-radius:10px;
+      font-family:'DM Sans',sans-serif;
+      font-size:.9rem;
+      font-weight:500;
+      cursor:pointer;
+      transition:opacity .2s;
+      touch-action:manipulation;
+      /* Taille minimale pour les doigts sur mobile */
+      min-height:44px;
+    }
     .cookie-btn:hover{opacity:.85}
-    .cookie-btn.accept{background:var(--ink);color:#fff;flex:1}
-    .cookie-btn.decline{background:var(--warm);color:var(--muted);flex:1}
-    .cookie-btn.details{background:transparent;color:var(--muted);font-size:.8rem;border:1px solid var(--warm);padding:10px 14px}
+    .cookie-btn.accept{background:var(--ink);color:#fff;flex:1;min-width:140px}
+    .cookie-btn.decline{background:var(--warm);color:var(--muted);flex:1;min-width:100px}
+    .cookie-btn.details{background:transparent;color:var(--muted);font-size:.8rem;border:1px solid var(--warm);padding:10px 14px;width:100%}
     /* ── Modal détails cookies ──────────────────────────────────────────── */
     #cookieModal{position:fixed;inset:0;background:rgba(26,20,18,.75);z-index:10001;display:none;align-items:center;justify-content:center;padding:20px}
     #cookieModal.open{display:flex}
@@ -92,7 +127,15 @@
     #cookieFooterNote{position:fixed;bottom:0;left:0;right:0;background:var(--ink);color:rgba(255,255,255,.6);font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.06em;text-align:center;padding:6px 16px;z-index:9000;display:none}
     #cookieFooterNote a{color:rgba(255,255,255,.8);text-decoration:underline;cursor:pointer}
     /* ── Blur du contenu avant consentement ─────────────────────────────── */
-    body.pending-consent main, body.pending-consent header, body.pending-consent footer{filter:blur(4px) brightness(.95);pointer-events:none;user-select:none}
+    body.pending-consent main,
+    body.pending-consent header,
+    body.pending-consent footer{
+      filter:blur(3px) brightness(.95);
+      pointer-events:none;
+      user-select:none
+    }
+    /* Empêche le scroll du body quand la bannière est ouverte */
+    body.pending-consent{overflow:hidden}
 
     /* ── Bouton historique ───────────────────────────────────────────────── */
     .yesterday-btn{display:flex;align-items:center;gap:8px;background:transparent;border:1.5px solid var(--warm);border-radius:10px;padding:9px 14px;font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:all .2s;width:100%}
@@ -132,14 +175,9 @@
   <div id="cookieBanner" role="dialog" aria-labelledby="cookieBannerTitle" aria-modal="true">
     <p class="cookie-title"><span>🍪</span> <span id="cookieBannerTitle">Ce site utilise des cookies</span></p>
     <p class="cookie-text">
-      Définition du Jour utilise des cookies <strong>strictement nécessaires</strong> pour mémoriser
-      votre progression, votre série de victoires et vos tentatives du jour.
-      Aucun cookie publicitaire ni traçage tiers n'est utilisé.
-      En jouant, vous acceptez le dépôt de ces cookies sur votre appareil pour une durée de
-      <strong>400 jours</strong>.<br><br>
-      Conformément au <strong>RGPD</strong> et à la directive ePrivacy, votre consentement est requis
-      avant tout dépôt de cookie. Vous pouvez refuser : le jeu fonctionnera mais votre progression
-      ne sera pas sauvegardée entre les sessions.<br><br>
+      Ce site utilise des cookies <strong>strictement nécessaires</strong> pour sauvegarder
+      votre progression, votre série et vos tentatives du jour. Aucun traçage publicitaire.<br><br>
+      Vous pouvez refuser : le jeu fonctionne mais votre progression ne sera pas conservée.<br><br>
       <a id="openCookieModal" tabindex="0">Voir le détail des cookies →</a>
     </p>
     <div class="cookie-actions">
@@ -1556,7 +1594,7 @@ function renderHistory() {
   const history = loadHistory();
 
   if (history.length === 0) {
-    list.innerHTML = '<p class="hist-empty">Aucune partie jouée pour l'instant.<br>Revenez demain !</p>';
+    list.innerHTML = '<p class="hist-empty">Aucune partie enregistrée.<br>Revenez demain !</p>';
     return;
   }
 
