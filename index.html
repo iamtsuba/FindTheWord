@@ -94,22 +94,33 @@
     /* ── Blur du contenu avant consentement ─────────────────────────────── */
     body.pending-consent main, body.pending-consent header, body.pending-consent footer{filter:blur(4px) brightness(.95);pointer-events:none;user-select:none}
 
-    /* ── Bouton mot d'hier ───────────────────────────────────────────────── */
+    /* ── Bouton historique ───────────────────────────────────────────────── */
     .yesterday-btn{display:flex;align-items:center;gap:8px;background:transparent;border:1.5px solid var(--warm);border-radius:10px;padding:9px 14px;font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:all .2s;width:100%}
     .yesterday-btn:hover{border-color:var(--ink);color:var(--ink);background:var(--warm)}
     .yesterday-btn svg{width:14px;height:14px;flex-shrink:0}
-    /* ── Modal mot d'hier ───────────────────────────────────────────────── */
+    /* ── Modal historique ────────────────────────────────────────────────── */
     #yesterdayModal{position:fixed;inset:0;background:rgba(26,20,18,.65);z-index:9500;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)}
     #yesterdayModal.open{display:flex}
-    .yesterday-modal-box{background:var(--card);border-radius:var(--r);padding:32px 28px;max-width:520px;width:100%;box-shadow:0 8px 48px rgba(26,20,18,.2);position:relative;animation:modal-pop .3s cubic-bezier(.22,1,.36,1)}
+    .yesterday-modal-box{background:var(--card);border-radius:var(--r);padding:28px 24px;max-width:560px;width:100%;max-height:82vh;overflow-y:auto;box-shadow:0 8px 48px rgba(26,20,18,.2);position:relative;animation:modal-pop .3s cubic-bezier(.22,1,.36,1)}
     @keyframes modal-pop{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:none}}
-    .yday-label{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
-    .yday-date{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;opacity:.7}
-    .yday-definition{font-family:'Playfair Display',Georgia,serif;font-size:1.15rem;line-height:1.65;font-style:italic;color:var(--ink);margin-bottom:18px;padding-left:14px;border-left:3px solid var(--accent)}
-    .yday-word{font-family:'DM Mono',monospace;font-size:1.1rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);background:rgba(192,57,43,.07);border:1px solid rgba(192,57,43,.2);border-radius:8px;padding:10px 16px;text-align:center;margin-bottom:6px}
-    .yday-category{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;background:var(--warm);color:var(--muted);padding:3px 10px;border-radius:100px;display:inline-block}
     .yday-close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--muted);line-height:1}
     .yday-close:hover{color:var(--ink)}
+    .hist-header{font-family:'Playfair Display',Georgia,serif;font-size:1.2rem;font-weight:700;color:var(--ink);margin-bottom:4px}
+    .hist-sub{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+    /* ── Ligne historique ────────────────────────────────────────────────── */
+    .hist-list{display:flex;flex-direction:column;gap:10px}
+    .hist-row{display:grid;grid-template-columns:1fr auto;align-items:start;gap:12px;background:var(--paper);border:1px solid var(--warm);border-radius:12px;padding:12px 14px;border-left:4px solid var(--warm)}
+    .hist-row.win{border-left-color:#27ae60}
+    .hist-row.lose{border-left-color:var(--accent)}
+    .hist-date{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+    .hist-def{font-family:'Playfair Display',Georgia,serif;font-size:.85rem;line-height:1.5;font-style:italic;color:var(--ink);margin-bottom:6px}
+    .hist-word{font-family:'DM Mono',monospace;font-size:.82rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;display:inline-block;padding:3px 10px;border-radius:6px}
+    .hist-word.win{color:#1a5e36;background:rgba(39,174,96,.12);border:1px solid rgba(39,174,96,.3)}
+    .hist-word.lose{color:var(--accent);background:rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.2)}
+    .hist-streak{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:44px}
+    .hist-flame{font-size:1.3rem;line-height:1}
+    .hist-streak-num{font-family:'DM Mono',monospace;font-size:.75rem;font-weight:500;color:var(--ink)}
+    .hist-empty{text-align:center;padding:32px 0;font-family:'DM Mono',monospace;font-size:.8rem;color:var(--muted);letter-spacing:.06em}
 </style>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2216%22%20r%3D%2211%22%20fill%3D%22none%22%20stroke%3D%22%23c0392b%22%20stroke-width%3D%221.5%22/%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2216%22%20r%3D%228%22%20fill%3D%22%23c0392b%22/%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20font-family%3D%22Georgia%2Cserif%22%20font-size%3D%2210%22%20font-weight%3D%22bold%22%20fill%3D%22white%22%20text-anchor%3D%22middle%22%3ED%3C/text%3E%3Cline%20x1%3D%2216%22%20y1%3D%221%22%20%20x2%3D%2216%22%20y2%3D%224%22%20%20stroke%3D%22%23e67e22%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3Cline%20x1%3D%2216%22%20y1%3D%2228%22%20x2%3D%2216%22%20y2%3D%2231%22%20stroke%3D%22%23e67e22%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3Cline%20x1%3D%221%22%20%20y1%3D%2216%22%20x2%3D%224%22%20%20y2%3D%2216%22%20stroke%3D%22%23e67e22%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3Cline%20x1%3D%2228%22%20y1%3D%2216%22%20x2%3D%2231%22%20y2%3D%2216%22%20stroke%3D%22%23e67e22%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3Cline%20x1%3D%225%22%20%20y1%3D%225%22%20%20x2%3D%227%22%20%20y2%3D%227%22%20%20stroke%3D%22%23e67e22%22%20stroke-width%3D%221.2%22%20stroke-linecap%3D%22round%22/%3E%3Cline%20x1%3D%2227%22%20y1%3D%225%22%20%20x2%3D%2225%22%20y2%3D%227%22%20%20stroke%3D%22%23e67e22%22%20stroke-width%3D%221.2%22%20stroke-linecap%3D%22round%22/%3E%3Cline%20x1%3D%225%22%20%20y1%3D%2227%22%20x2%3D%227%22%20%20y2%3D%2225%22%20stroke%3D%22%23e67e22%22%20stroke-width%3D%221.2%22%20stroke-linecap%3D%22round%22/%3E%3Cline%20x1%3D%2227%22%20y1%3D%2227%22%20x2%3D%2225%22%20y2%3D%2225%22%20stroke%3D%22%23e67e22%22%20stroke-width%3D%221.2%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E">
   <title>Définition du Jour</title>
@@ -173,6 +184,12 @@
         <tr>
           <td>ddj_today</td>
           <td>Conserve vos tentatives du jour en cours pour restaurer la partie après un rechargement</td>
+          <td>400 jours</td>
+          <td>Fonctionnel</td>
+        </tr>
+        <tr>
+          <td>ddj_history</td>
+          <td>Sauvegarde votre historique de parties (dates, mots, résultats) pour l'affichage dans « Définitions d'hier »</td>
           <td>400 jours</td>
           <td>Fonctionnel</td>
         </tr>
@@ -275,21 +292,19 @@
       <div class="next-game"><p>Revenez demain pour un nouveau mot !</p><div class="countdown" id="countdownAlready"></div></div>
     </div>
   </div>
-  <!-- ── Bouton mot d'hier ──────────────────────────────────────────────── -->
-  <button class="yesterday-btn" id="openYesterdayModal" aria-label="Voir le mot d'hier">
+  <!-- ── Bouton historique ─────────────────────────────────────────────── -->
+  <button class="yesterday-btn" id="openYesterdayModal" aria-label="Voir les définitions précédentes">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></svg>
-    Mot d'hier
+    Définitions d'hier
   </button>
 
-  <!-- ── Modal mot d'hier ────────────────────────────────────────────────── -->
-  <div id="yesterdayModal" role="dialog" aria-labelledby="ydayModalTitle" aria-modal="true">
+  <!-- ── Modal historique ───────────────────────────────────────────────── -->
+  <div id="yesterdayModal" role="dialog" aria-labelledby="histModalTitle" aria-modal="true">
     <div class="yesterday-modal-box">
       <button class="yday-close" id="closeYesterdayModal" aria-label="Fermer">×</button>
-      <p class="yday-label">📖 Mot d'hier</p>
-      <p class="yday-date" id="ydayDate"></p>
-      <p class="yday-definition" id="ydayDefinition"></p>
-      <div class="yday-word" id="ydayWord"></div>
-      <span class="yday-category" id="ydayCategory"></span>
+      <p class="hist-header" id="histModalTitle">📖 Définitions précédentes</p>
+      <p class="hist-sub">Votre historique de jeu</p>
+      <div class="hist-list" id="histList"></div>
     </div>
   </div>
 
@@ -1060,8 +1075,9 @@ function deleteCookie(name) {
 }
 
 // ── Clés cookies ─────────────────────────────────────────────────────────
-const C_STATE  = 'ddj_state';   // { streak, lastWonDate, lastPlayedDate }
-const C_TODAY  = 'ddj_today';   // { key, guesses[] }
+const C_STATE   = 'ddj_state';    // { streak, lastWonDate, lastPlayedDate }
+const C_TODAY   = 'ddj_today';    // { key, guesses[] }
+const C_HISTORY = 'ddj_history';  // [ { date, word, won, streak } ... ] (30 derniers jours)
 const COOKIE_DAYS = 400;
 const SITE_URL = 'http://defdujour.fr/';
 const MAX = 6;
@@ -1077,6 +1093,25 @@ function loadToday() {
 }
 function saveToday(t) {
   setCookie(C_TODAY, t, COOKIE_DAYS);
+}
+function loadHistory() {
+  return getCookie(C_HISTORY) || [];
+}
+function saveHistory(h) {
+  // On garde max 90 entrées
+  setCookie(C_HISTORY, h.slice(-90), COOKIE_DAYS);
+}
+function addToHistory(date, word, won, streak) {
+  const h = loadHistory();
+  // Éviter les doublons pour le même jour
+  const existing = h.findIndex(e => e.date === date);
+  const entry = { date, word, won, streak };
+  if (existing >= 0) {
+    h[existing] = entry;
+  } else {
+    h.push(entry);
+  }
+  saveHistory(h);
 }
 
 // ── Utilitaires ───────────────────────────────────────────────────────────
@@ -1459,6 +1494,8 @@ function init() {
       // ✅ Bonne réponse
       // Incrémenter la série uniquement si le dernier mot trouvé était HIER
       // (pas avant-hier, pas il y a 3 jours — sinon on repart à 1)
+      // Incrémenter la série uniquement si le dernier mot trouvé était HIER
+      // (pas avant-hier, pas il y a 3 jours — sinon on repart à 1)
       state.streak = (state.lastWonDate === yest) ? (state.streak||0)+1 : 1;
       state.lastWonDate    = today;
       state.lastPlayedDate = today;
@@ -1466,6 +1503,8 @@ function init() {
       // On garde les tentatives du jour dans le cookie même après victoire
       todayData.guesses = guesses;
       saveToday(todayData);
+      // Sauvegarder dans l'historique
+      addToHistory(today, wo.word, true, state.streak);
       showVictory(state, wo, attempts + 1);
 
     } else {
@@ -1482,6 +1521,8 @@ function init() {
         state.streak         = 0;
         state.lastPlayedDate = today;
         saveState(state);
+        // Sauvegarder dans l'historique (mot non trouvé, série = 0)
+        addToHistory(today, wo.word, false, 0);
         showDefeat(wo);
       } else {
         renderPastGuesses(guesses);
@@ -1499,24 +1540,53 @@ function init() {
 }
 
 
-// ── Mot d'hier (clé pour la modale) ─────────────────────────────────────
-function yesterdayDisplayKey() {
-  return yesterdayKey(); // utilise déjà l'heure Paris
-}
+// ── Historique : modale ───────────────────────────────────────────────────
 function fmtDateShort(k) {
-  return new Date(k+'T12:00:00').toLocaleDateString('fr-FR',{
+  const d = new Date(k+'T12:00:00');
+  // Capitalise la première lettre
+  const s = d.toLocaleDateString('fr-FR',{
     timeZone:'Europe/Paris',
     weekday:'long',day:'numeric',month:'long',year:'numeric'
   });
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function renderHistory() {
+  const list    = document.getElementById('histList');
+  const history = loadHistory();
+
+  if (history.length === 0) {
+    list.innerHTML = '<p class="hist-empty">Aucune partie jouée pour l'instant.<br>Revenez demain !</p>';
+    return;
+  }
+
+  // Trier du plus récent au plus ancien
+  const sorted = [...history].sort((a, b) => b.date.localeCompare(a.date));
+
+  list.innerHTML = sorted.map(entry => {
+    // Retrouver la définition du mot depuis WORDS
+    const wordObj = WORDS.find(w => w.word === entry.word) || { definition: '—', category: '—' };
+    const dateStr = fmtDateShort(entry.date);
+    const winClass = entry.won ? 'win' : 'lose';
+    const flameStr = entry.won ? '🔥' : '💨';
+    const streakNum = entry.streak || 0;
+
+    return \`<div class="hist-row \${winClass}">
+      <div>
+        <div class="hist-date">\${dateStr}</div>
+        <div class="hist-def">\${wordObj.definition}</div>
+        <span class="hist-word \${winClass}">\${entry.word.toUpperCase()}</span>
+      </div>
+      <div class="hist-streak">
+        <span class="hist-flame">\${flameStr}</span>
+        <span class="hist-streak-num">\${streakNum}</span>
+      </div>
+    </div>\`;
+  }).join('');
 }
 
 document.getElementById('openYesterdayModal').addEventListener('click', function() {
-  const yw = yesterdayWord();
-  const yk = yesterdayDisplayKey();
-  document.getElementById('ydayDate').textContent       = fmtDateShort(yk);
-  document.getElementById('ydayDefinition').textContent = yw.definition;
-  document.getElementById('ydayWord').textContent       = yw.word.toUpperCase();
-  document.getElementById('ydayCategory').textContent   = yw.category;
+  renderHistory();
   document.getElementById('yesterdayModal').classList.add('open');
 });
 
