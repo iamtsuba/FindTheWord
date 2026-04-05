@@ -1080,23 +1080,59 @@ function saveToday(t) {
 }
 
 // ── Utilitaires ───────────────────────────────────────────────────────────
-function todayKey() {
+// ── Toutes les dates calculées en heure de Paris (Europe/Paris) ──────────
+// Garantit que le mot change à 00h00 heure française, pas UTC
+function parisDateStr(offsetDays) {
   const d = new Date();
-  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  // Convertir en heure Paris via Intl
+  const parts = new Intl.DateTimeFormat('fr-FR', {
+    timeZone: 'Europe/Paris',
+    year: 'numeric', month: '2-digit', day: '2-digit'
+  }).formatToParts(d);
+  const map = {};
+  parts.forEach(p => { map[p.type] = p.value; });
+  // Reconstruire en date Paris puis ajouter l'offset
+  const paris = new Date(map.year+'-'+map.month+'-'+map.day+'T00:00:00');
+  paris.setDate(paris.getDate() + (offsetDays || 0));
+  return paris.getFullYear()+'-'+String(paris.getMonth()+1).padStart(2,'0')+'-'+String(paris.getDate()).padStart(2,'0');
 }
-function yesterdayKey() {
-  const d = new Date(); d.setDate(d.getDate()-1);
-  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-}
+function todayKey()     { return parisDateStr(0);  }
+function yesterdayKey() { return parisDateStr(-1); }
+
 function todayWord() {
-  const diff = Math.floor((new Date() - new Date('2024-01-01')) / 86400000);
+  // Calcul du numéro de jour en heure Paris depuis le 01/01/2024
+  const start = new Date('2024-01-01T00:00:00+01:00'); // 1er jan 2024 minuit Paris
+  const nowParis = new Date(new Intl.DateTimeFormat('fr-FR', {
+    timeZone: 'Europe/Paris',
+    year: 'numeric', month: '2-digit', day: '2-digit'
+  }).format(new Date()).split('/').reverse().join('-')+'T00:00:00');
+  const diff = Math.floor((nowParis - start) / 86400000);
   return WORDS[Math.abs(diff) % WORDS.length];
+}
+
+function yesterdayWord() {
+  const start = new Date('2024-01-01T00:00:00+01:00');
+  const parts = new Intl.DateTimeFormat('fr-FR', {
+    timeZone: 'Europe/Paris',
+    year: 'numeric', month: '2-digit', day: '2-digit'
+  }).formatToParts(new Date());
+  const map = {};
+  parts.forEach(p => { map[p.type] = p.value; });
+  const paris = new Date(map.year+'-'+map.month+'-'+map.day+'T00:00:00');
+  paris.setDate(paris.getDate() - 1);
+  const diff = Math.floor((paris - start) / 86400000);
+  const idx = ((diff) % WORDS.length + WORDS.length) % WORDS.length;
+  return WORDS[idx];
 }
 function norm(s) {
   return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z]/g,'');
 }
 function fmtDate(k) {
-  return new Date(k+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase();
+  // Forcer l'affichage en heure Paris
+  return new Date(k+'T12:00:00').toLocaleDateString('fr-FR',{
+    timeZone:'Europe/Paris',
+    weekday:'long',year:'numeric',month:'long',day:'numeric'
+  }).toUpperCase();
 }
 
 // ── Confettis ─────────────────────────────────────────────────────────────
@@ -1382,7 +1418,9 @@ function init() {
     saveToday(todayData);
   }
 
-  // Rupture de série si pas joué hier
+  // Rupture de série :
+  // - Si lastWonDate n'est ni aujourd'hui ni hier → la série est cassée
+  // - Si lastPlayedDate est aujourd'hui mais pas lastWonDate → perdu aujourd'hui, série à 0
   if (state.lastWonDate && state.lastWonDate !== yest && state.lastWonDate !== today) {
     state.streak = 0; saveState(state);
     document.getElementById('streakCount').textContent = 0;
@@ -1419,6 +1457,8 @@ function init() {
 
     if (norm(raw) === norm(wo.word)) {
       // ✅ Bonne réponse
+      // Incrémenter la série uniquement si le dernier mot trouvé était HIER
+      // (pas avant-hier, pas il y a 3 jours — sinon on repart à 1)
       state.streak = (state.lastWonDate === yest) ? (state.streak||0)+1 : 1;
       state.lastWonDate    = today;
       state.lastPlayedDate = today;
@@ -1459,18 +1499,15 @@ function init() {
 }
 
 
-// ── Mot d'hier ────────────────────────────────────────────────────────────
-function yesterdayWord() {
-  const diff = Math.floor((new Date() - new Date('2024-01-01')) / 86400000);
-  const idx  = ((diff - 1) % WORDS.length + WORDS.length) % WORDS.length;
-  return WORDS[idx];
-}
+// ── Mot d'hier (clé pour la modale) ─────────────────────────────────────
 function yesterdayDisplayKey() {
-  const d = new Date(); d.setDate(d.getDate() - 1);
-  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  return yesterdayKey(); // utilise déjà l'heure Paris
 }
 function fmtDateShort(k) {
-  return new Date(k+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  return new Date(k+'T12:00:00').toLocaleDateString('fr-FR',{
+    timeZone:'Europe/Paris',
+    weekday:'long',day:'numeric',month:'long',year:'numeric'
+  });
 }
 
 document.getElementById('openYesterdayModal').addEventListener('click', function() {
@@ -1500,4 +1537,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </script>
 </body>
-</html>
+  </html>
